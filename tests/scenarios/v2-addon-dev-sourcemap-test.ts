@@ -28,12 +28,12 @@ appScenarios
         {
           "plugins": [
             "@babel/plugin-transform-typescript",
-            "@babel/plugin-transform-class-static-block",
             ["babel-plugin-ember-template-compilation", {
               targetFormat: 'hbs',
             }],
-            ["@babel/plugin-proposal-decorators", { "legacy": true }],
-            ["@babel/plugin-transform-class-properties"]
+            ["module:decorator-transforms", {
+              runtime: { import: 'decorator-transforms/runtime-esm' }
+            }]
           ]
         }
       `,
@@ -69,14 +69,15 @@ appScenarios
           // referenced from inside the template, so it becomes an entry in the
           // compiled \`scope()\` thunk.
           'gjs-demo.gjs': `import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 
 const gjsScopedValue = 'gjs-scoped-value';
 
 export default class GjsDemo extends Component {
-  gjsInstanceField = 'gjs-instance-field';
+  @tracked gjsTrackedValue = 'gjs-tracked-value';
 
   <template>
-    <span data-test-gjs>{{gjsScopedValue}} {{this.gjsInstanceField}}</span>
+    <span data-test-gjs>{{gjsScopedValue}} {{this.gjsTrackedValue}}</span>
   </template>
 }
 `,
@@ -84,6 +85,7 @@ export default class GjsDemo extends Component {
           // .gts pipeline (content-tag -> transform-typescript -> template
           // compilation -> rollup) and prove the map survives type-stripping.
           'gts-demo.gts': `import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 
 interface GtsDemoSignature {
   Args: {
@@ -94,10 +96,10 @@ interface GtsDemoSignature {
 const gtsScopedValue: string = 'gts-scoped-value';
 
 export default class GtsDemo extends Component<GtsDemoSignature> {
-  gtsInstanceField: string = 'gts-instance-field';
+  @tracked gtsTrackedValue: string = 'gts-tracked-value';
 
   <template>
-    <span data-test-gts>{{gtsScopedValue}} {{@name}} {{this.gtsInstanceField}}</span>
+    <span data-test-gts>{{gtsScopedValue}} {{@name}} {{this.gtsTrackedValue}}</span>
   </template>
 }
 `,
@@ -110,9 +112,9 @@ export default class GtsDemo extends Component<GtsDemoSignature> {
     addon.linkDependency('babel-plugin-ember-template-compilation', { baseDir: __dirname });
     addon.linkDevDependency('@babel/core', { baseDir: __dirname });
     addon.linkDevDependency('@babel/plugin-transform-typescript', { baseDir: __dirname });
-    addon.linkDevDependency('@babel/plugin-transform-class-static-block', { baseDir: __dirname });
-    addon.linkDevDependency('@babel/plugin-transform-class-properties', { baseDir: __dirname });
-    addon.linkDevDependency('@babel/plugin-proposal-decorators', { baseDir: __dirname });
+    // a real dependency (not dev) so `addon.dependencies()` externalizes the
+    // emitted `decorator-transforms/runtime` import instead of trying to bundle it
+    addon.linkDependency('decorator-transforms', { baseDir: __dirname });
     addon.linkDevDependency('@rollup/plugin-babel', { baseDir: __dirname });
     addon.linkDevDependency('rollup', { baseDir: __dirname });
 
