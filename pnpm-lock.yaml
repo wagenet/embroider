@@ -1733,6 +1733,9 @@ importers:
       '@embroider/webpack':
         specifier: workspace:*
         version: link:../../packages/webpack
+      '@jridgewell/trace-mapping':
+        specifier: ^0.3.25
+        version: 0.3.31
       '@types/qunit':
         specifier: 2.19.10
         version: 2.19.10

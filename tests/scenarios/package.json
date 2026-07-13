@@ -3,6 +3,7 @@
   "version": "0.0.5",
   "dependencies": {
     "@embroider/addon-dev": "workspace:*",
+    "@jridgewell/trace-mapping": "^0.3.25",
     "@embroider/compat": "workspace:*",
     "@embroider/core": "workspace:*",
     "embroider-sample-transforms": "workspace:*",
