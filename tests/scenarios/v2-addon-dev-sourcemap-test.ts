@@ -8,17 +8,7 @@ import { assertTemplateVariableMapsToSource } from './helpers/source-maps';
 
 const { module: Qmodule, test } = QUnit;
 
-// These tests validate that the source maps emitted for template-tag components
-// (`.gjs` and `.gts`) actually map the compiled output back to the original
-// author-time source. In particular we care about variables that are referenced
-// inside a `<template>` block: after compilation they show up in the generated
-// `scope: () => ({ ... })` thunk, and a debugger stopped on that generated code
-// should be able to point the developer back at the value in their original
-// source file. If the map is missing, points at the wrong file, or resolves to a
-// line that no longer mentions the variable, the debugging experience is broken.
 appScenarios
-  // the addon build is independent of the host-app version, so we only need to
-  // exercise it once
   .only('canary')
   .map('v2-addon-dev-sourcemap', async project => {
     let addon = baseV2Addon();

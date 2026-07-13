@@ -6,24 +6,7 @@ import { assertTemplateVariableMapsToSource, findMapForVariable } from './helper
 
 const { module: Qmodule, test } = QUnit;
 
-// The companion of v2-addon-dev-sourcemap-test.ts, but for the *app* build.
-//
-// Apps are built with Vite, so the source-map chain is different: content-tag +
-// babel-plugin-ember-template-compilation feed maps into Rollup/Vite, which
-// bundles everything into hashed chunks under dist/assets. We validate that a
-// variable referenced inside a `<template>` (which ends up in the compiled
-// `scope: () => ({ ... })` thunk) still maps back to the original `.gjs`/`.gts`
-// source, so that a developer debugging the production bundle lands on the value
-// they actually wrote.
-//
-// Two things are needed to make the production build assertable:
-//   * `build.sourcemap` must be on (Vite defaults it to false, so no `.map`
-//     files would be emitted otherwise), and
-//   * `build.minify` is turned off so the generated template region is readable
-//     and the scoped identifiers survive (mirrors the readability we get for
-//     free from the addon's rollup build).
 appScenarios
-  // the source-map behavior is independent of the host Ember version
   .only('canary')
   .map('vite-app-sourcemap', project => {
     project.mergeFiles({
@@ -77,7 +60,6 @@ export default class GtsDemo extends Component {
 `,
         },
         templates: {
-          // Reference the components so they're pulled into the build graph.
           'application.hbs': `<GjsDemo />
 <GtsDemo />
 {{outlet}}`,
