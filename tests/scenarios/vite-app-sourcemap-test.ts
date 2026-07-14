@@ -17,10 +17,10 @@ appScenarios
 
         export default defineConfig({
           build: {
-            // emit .map files next to the bundle...
+            // emit .map files next to the bundle (Vite defaults this off). We
+            // match against the map via its mappings/names, not the generated
+            // text, so minification can stay on and the maps stay small.
             sourcemap: true,
-            // ...and keep the output readable so we can locate the template region
-            minify: false,
           },
           plugins: [
             classicEmberSupport(),

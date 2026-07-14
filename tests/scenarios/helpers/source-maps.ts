@@ -90,7 +90,19 @@ export async function findMapForVariable(
 ): Promise<{ mapFile: string; rawMap: unknown } | undefined> {
   let mapFiles = await globby('**/*.map', { cwd: distDir, absolute: true });
   for (let mapFile of mapFiles) {
-    let rawMap = JSON.parse(readFileSync(mapFile, 'utf8'));
+    let raw = readFileSync(mapFile, 'utf8');
+    // Cheap pre-filters, cheapest first, so we never decode/iterate huge
+    // vendor-chunk maps that would otherwise make `eachMapping` blow up in time
+    // and memory. A raw substring test avoids even parsing maps that don't
+    // mention the authored file; the parsed `sources` check is the precise one.
+    if (!raw.includes(originalFile)) {
+      continue;
+    }
+    let rawMap = JSON.parse(raw);
+    let sources: unknown[] = Array.isArray(rawMap.sources) ? rawMap.sources : [];
+    if (!sources.some(source => typeof source === 'string' && source.includes(originalFile))) {
+      continue;
+    }
     if (findVariableMapping(new TraceMap(rawMap), originalFile, variable)) {
       return { mapFile, rawMap };
     }
