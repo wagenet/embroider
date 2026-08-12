@@ -4,7 +4,7 @@ import type { Node } from 'broccoli-node-api';
 import { readdirSync, writeFileSync, readFileSync } from 'fs';
 import { pathExistsSync, removeSync } from 'fs-extra';
 import { Funnel } from 'broccoli-funnel';
-import { transform } from '@babel/core';
+import { transformSync } from '@babel/core';
 import { stripBadReexportsPlugin } from '../compat-utils';
 
 export default class extends V1Addon {
@@ -33,6 +33,6 @@ class MatchHelpers extends Funnel {
     }
     let src = readFileSync(join(this.inputPaths[0], 'index.js'), 'utf8');
     let plugins = [stripBadReexportsPlugin({ resolveBase: this.outputPath })];
-    writeFileSync(join(this.outputPath, 'index.js'), transform(src, { plugins, configFile: false })!.code!);
+    writeFileSync(join(this.outputPath, 'index.js'), transformSync(src, { plugins, configFile: false })!.code!);
   }
 }

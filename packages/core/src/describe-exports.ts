@@ -1,12 +1,12 @@
 import type { TransformOptions } from '@babel/core';
-import { parse } from '@babel/core';
+import { parseSync } from '@babel/core';
 import type { NodePath } from '@babel/traverse';
 import traverse from '@babel/traverse';
 import { types as t } from '@babel/core';
 import assertNever from 'assert-never';
 
 export function describeExports(code: string, babelParserConfig: TransformOptions): { names: Set<string> } {
-  let ast = parse(code, babelParserConfig);
+  let ast = parseSync(code, babelParserConfig);
   if (!ast || ast.type !== 'File') {
     throw new Error(`bug in embroider/core describe-exports`);
   }

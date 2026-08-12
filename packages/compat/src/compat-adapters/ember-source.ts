@@ -6,7 +6,7 @@ import { outputFileSync, readFileSync, readdirSync, unlinkSync } from 'fs-extra'
 import { join, resolve } from 'path';
 import { Memoize } from 'typescript-memoize';
 import { satisfies } from 'semver';
-import { transform } from '@babel/core';
+import { transformSync } from '@babel/core';
 import type * as Babel from '@babel/core';
 import type { NodePath } from '@babel/traverse';
 import Plugin from 'broccoli-plugin';
@@ -159,7 +159,7 @@ export default class extends V1Addon {
 class FixStringLoc extends Plugin {
   build() {
     let inSource = readFileSync(resolve(this.inputPaths[0], 'ember', 'index.js'), 'utf8');
-    let outSource = transform(inSource, {
+    let outSource = transformSync(inSource, {
       plugins: [fixStringLoc],
       configFile: false,
     })!.code!;
@@ -337,7 +337,7 @@ import './initializers'; // to setup initializer`
 class FixDeprecateFunction extends Plugin {
   build() {
     let inSource = readFileSync(resolve(this.inputPaths[0], '@ember', 'debug', 'index.js'), 'utf8');
-    let outSource = transform(inSource, {
+    let outSource = transformSync(inSource, {
       plugins: [fixDeprecate],
       configFile: false,
     })!.code!;
@@ -419,7 +419,7 @@ function updateFileWithTransform(
   let inSource = readFileSync(resolve(context.inputPaths[0], file), 'utf8');
 
   let plugins = Array.isArray(transformFunction) ? transformFunction : [transformFunction];
-  let outSource = transform(inSource, {
+  let outSource = transformSync(inSource, {
     plugins,
     configFile: false,
   })!.code!;
